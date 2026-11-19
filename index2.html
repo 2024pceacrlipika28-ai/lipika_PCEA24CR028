@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Strength Meter</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+
+        #password {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .bar {
+            height: 12px;
+            background: lightgray;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+
+        #strengthBar {
+            height: 12px;
+            width: 0%;
+            border-radius: 10px;
+        }
+
+        .weak { background: red; }
+        .medium { background: orange; }
+        .strong { background: green; }
+
+        .valid { color: green; }
+        .invalid { color: gray; }
+
+        li { margin: 12px 0; }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Password Strength</h2>
+
+    <input type="password" id="password"
+           placeholder="Enter password">
+
+    <br><br>
+
+    <input type="checkbox" id="show">
+    Show password
+
+    <div class="bar">
+        <div id="strengthBar"></div>
+    </div>
+
+    <h3 id="result"></h3>
+
+    <ul>
+        <li id="r1" class="invalid">✗ At least 8 characters</li>
+        <li id="r2" class="invalid">✗ One uppercase letter</li>
+        <li id="r3" class="invalid">✗ One lowercase letter</li>
+        <li id="r4" class="invalid">✗ One number</li>
+        <li id="r5" class="invalid">✗ One special symbol</li>
+    </ul>
+
+</div>
+
+<script>
+    const password = document.getElementById("password");
+    const show = document.getElementById("show");
+    const bar = document.getElementById("strengthBar");
+    const result = document.getElementById("result");
+
+    function checkPassword() {
+
+        let p = password.value;
+
+        let rules = [
+            p.length >= 8,
+            /[A-Z]/.test(p),
+            /[a-z]/.test(p),
+            /[0-9]/.test(p),
+            /[^A-Za-z0-9]/.test(p)
+        ];
+
+        let names = [
+            "At least 8 characters",
+            "One uppercase letter",
+            "One lowercase letter",
+            "One number",
+            "One special symbol"
+        ];
+
+        let count = 0;
+
+        for (let i = 0; i < 5; i++) {
+
+            let item = document.getElementById("r" + (i + 1));
+
+            if (rules[i]) {
+                item.innerHTML = "✔ " + names[i];
+                item.className = "valid";
+                count++;
+            } else {
+                item.innerHTML = "✗ " + names[i];
+                item.className = "invalid";
+            }
+        }
+
+        bar.style.width = (count * 20) + "%";
+
+        if (p.length === 0) {
+            result.innerHTML = "";
+            bar.className = "";
+            return;
+        }
+
+        if (count <= 2) {
+            result.innerHTML = "Weak";
+            result.style.color = "red";
+            bar.className = "weak";
+        }
+        else if (count <= 4) {
+            result.innerHTML = "Medium";
+            result.style.color = "orange";
+            bar.className = "medium";
+        }
+        else {
+            result.innerHTML = "Strong";
+            result.style.color = "green";
+            bar.className = "strong";
+        }
+    }
+
+    password.addEventListener("input", checkPassword);
+
+    show.addEventListener("change", function() {
+        password.type = show.checked ? "text" : "password";
+    });
+
+</script>
+
+</body>
+</html>
+

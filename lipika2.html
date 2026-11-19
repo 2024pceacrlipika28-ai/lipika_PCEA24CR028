@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Strength Meter</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+        }
+
+        .container {
+            background: white;
+            width: 350px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .bar {
+            width: 100%;
+            height: 10px;
+            background: lightgray;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        #strengthBar {
+            height: 10px;
+            width: 0%;
+            border-radius: 5px;
+        }
+
+        .weak {
+            background: red;
+        }
+
+        .medium {
+            background: orange;
+        }
+
+        .strong {
+            background: green;
+        }
+
+        .valid {
+            color: green;
+        }
+
+        .invalid {
+            color: gray;
+        }
+
+        li {
+            margin: 12px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Password Strength</h2>
+
+    <input type="password" id="password"
+           placeholder="Enter password">
+
+    <br><br>
+
+    <input type="checkbox" id="showPassword">
+    Show password
+
+    <div class="bar">
+        <div id="strengthBar"></div>
+    </div>
+
+    <h3 id="strengthText"></h3>
+
+    <ul>
+        <li id="r1">✗ At least 8 characters</li>
+        <li id="r2">✗ One uppercase letter</li>
+        <li id="r3">✗ One lowercase letter</li>
+        <li id="r4">✗ One number</li>
+        <li id="r5">✗ One special symbol</li>
+    </ul>
+
+</div>
+
+<script>
+
+    let password = document.getElementById("password");
+    let showPassword = document.getElementById("showPassword");
+
+    let bar = document.getElementById("strengthBar");
+    let strengthText = document.getElementById("strengthText");
+
+    // Password rules
+    let ruleNames = [
+        "At least 8 characters",
+        "One uppercase letter",
+        "One lowercase letter",
+        "One number",
+        "One special symbol"
+    ];
+
+    let ruleIds = ["r1", "r2", "r3", "r4", "r5"];
+
+    // Check password on every keystroke
+    password.addEventListener("input", checkPassword);
+
+    function checkPassword() {
+
+        let value = password.value;
+
+        // Regular expressions
+        let rules = [
+            value.length >= 8,
+            /[A-Z]/.test(value),
+            /[a-z]/.test(value),
+            /[0-9]/.test(value),
+            /[^A-Za-z0-9]/.test(value)
+        ];
+
+        let count = 0;
+
+        // Update checklist
+        for (let i = 0; i < rules.length; i++) {
+
+            let item = document.getElementById(ruleIds[i]);
+
+            if (rules[i]) {
+                item.innerHTML = "✔ " + ruleNames[i];
+                item.className = "valid";
+                count++;
+            }
+            else {
+                item.innerHTML = "✗ " + ruleNames[i];
+                item.className = "invalid";
+            }
+        }
+
+        // Empty password
+        if (value === "") {
+            bar.style.width = "0%";
+            bar.className = "";
+            strengthText.innerHTML = "";
+            return;
+        }
+
+        // Update strength bar
+        bar.style.width = (count * 20) + "%";
+
+        // Weak password
+        if (count <= 2) {
+            bar.className = "weak";
+            strengthText.innerHTML = "Weak";
+            strengthText.style.color = "red";
+        }
+
+        // Medium password
+        else if (count <= 4) {
+            bar.className = "medium";
+            strengthText.innerHTML = "Medium";
+            strengthText.style.color = "orange";
+        }
+
+        // Strong password
+        else {
+            bar.className = "strong";
+            strengthText.innerHTML = "Strong";
+            strengthText.style.color = "green";
+        }
+    }
+
+    // Show / Hide password
+    showPassword.addEventListener("change", function() {
+
+        if (showPassword.checked) {
+            password.type = "text";
+        }
+        else {
+            password.type = "password";
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
